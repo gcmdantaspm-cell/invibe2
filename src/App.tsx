@@ -9,6 +9,19 @@ import { EventModel, InteractionRequest } from './types';
 import { CreateEvent } from './components/CreateEvent';
 import { EventLobby } from './components/EventLobby';
 
+// Calculate distance between two coordinates in km
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2); 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c;
+}
+
 export default function App() {
   const { user, profile, loading, logout } = useAuth();
   
@@ -17,11 +30,33 @@ export default function App() {
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventModel | null>(null);
   const [interactions, setInteractions] = useState<InteractionRequest[]>([]);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          // Fallback to São Paulo se blocked
+          setUserLocation({lat: -23.5505, lng: -46.6333});
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      // Fallback if not supported
+      setUserLocation({lat: -23.5505, lng: -46.6333});
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
 
-    // Fetch Events (In a real app, query by geolocation radius)
+    // Fetch Events
     const qEvents = query(collection(db, 'events'));
     const unsubEvents = onSnapshot(qEvents, (snap) => {
       setEvents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as EventModel)));
@@ -53,20 +88,14 @@ export default function App() {
             </div>
           </header>
 
-          <main className="p-4 space-y-8 animate-in fade-in duration-500">
+          <main className="animate-in fade-in duration-500">
             {activeTab === 'home' && (
-              <>
+              <div className="p-4 space-y-8">
                 <div className="flex justify-between items-end mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-white">Vibes Próximas</h2>
                     <p className="text-slate-400 text-sm mt-1">Eventos acontecendo ao seu redor agora</p>
                   </div>
-                  <button 
-                    onClick={() => setIsCreatingEvent(true)}
-                    className="w-12 h-12 rounded-full bg-gradient-to-r from-fuchsia-600 to-cyan-600 text-white flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] shrink-0 hover:scale-105 transition-transform"
-                  >
-                    <Plus size={24} />
-                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -77,37 +106,62 @@ export default function App() {
                       <button onClick={() => setIsCreatingEvent(true)} className="text-cyan-400 mt-2 text-sm hover:underline">Seja o primeiro a criar um!</button>
                     </div>
                   ) : (
-                    events.map(event => (
-                      <div 
-                        key={event.id}
-                        onClick={() => setSelectedEvent(event)}
-                        className="bg-white/5 border border-white/10 rounded-3xl p-5 hover:bg-white/10 transition-colors cursor-pointer relative overflow-hidden group"
-                      >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-3xl -mr-10 -mt-10 group-hover:bg-cyan-500/20 transition-colors"></div>
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                          <div>
-                            <span className="inline-block px-3 py-1 bg-fuchsia-500/20 text-fuchsia-300 text-xs font-bold rounded-full uppercase tracking-wider mb-2">
-                              {event.type}
-                            </span>
-                            <h3 className="text-xl font-bold text-white">{event.title}</h3>
+                    events.map(event => {
+                      // Calculate distance if both locations are available
+                      let distanceText = "";
+                      if (userLocation && event.location) {
+                        const dist = getDistanceKm(userLocation.lat, userLocation.lng, event.location.lat, event.location.lng);
+                        distanceText = dist < 1 ? `${Math.round(dist * 1000)}m de você` : `${dist.toFixed(1)}km de você`;
+                      }
+
+                      return (
+                        <div 
+                          key={event.id}
+                          onClick={() => setSelectedEvent(event)}
+                          className="bg-white/5 border border-white/10 rounded-3xl p-5 hover:bg-white/10 transition-colors cursor-pointer relative overflow-hidden group"
+                        >
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 blur-3xl -mr-10 -mt-10 group-hover:bg-cyan-500/20 transition-colors"></div>
+                          <div className="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                              <span className="inline-block px-3 py-1 bg-fuchsia-500/20 text-fuchsia-300 text-xs font-bold rounded-full uppercase tracking-wider mb-2">
+                                {event.type}
+                              </span>
+                              <h3 className="text-xl font-bold text-white">{event.title}</h3>
+                            </div>
                           </div>
+                          <div className="flex flex-col gap-1 text-slate-400 text-sm relative z-10">
+                            <div className="flex items-center gap-2">
+                              <MapPin size={16} className="text-cyan-400 shrink-0" />
+                              <span className="truncate">{event.locationName}</span>
+                            </div>
+                            {distanceText && (
+                              <div className="text-cyan-400/80 text-xs font-medium ml-6">{distanceText}</div>
+                            )}
+                          </div>
+                          <button className="w-full mt-5 py-3 rounded-xl bg-white/10 text-white font-bold group-hover:bg-gradient-to-r group-hover:from-fuchsia-600 group-hover:to-cyan-600 transition-all">
+                            Fazer Check-in Virtual
+                          </button>
                         </div>
-                        <div className="flex items-center gap-2 text-slate-400 text-sm relative z-10">
-                          <MapPin size={16} className="text-cyan-400" />
-                          <span>{event.locationName}</span>
-                        </div>
-                        <button className="w-full mt-5 py-3 rounded-xl bg-white/10 text-white font-bold group-hover:bg-gradient-to-r group-hover:from-fuchsia-600 group-hover:to-cyan-600 transition-all">
-                          Fazer Check-in Virtual
-                        </button>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
-              </>
+              </div>
+            )}
+
+            {activeTab === 'discover' && (
+              <div className="space-y-6 p-4">
+                <h2 className="text-2xl font-bold text-white mb-6">Descobrir</h2>
+                <div className="text-center py-20 bg-white/5 border border-white/10 rounded-3xl">
+                  <Compass size={48} className="mx-auto text-cyan-500 mb-4" />
+                  <p className="text-slate-400 font-medium">Explore o mapa da cidade.</p>
+                  <p className="text-slate-500 text-sm mt-2">Em breve: encontre locais em alta, grupos e festas exclusivas baseadas no seu perfil.</p>
+                </div>
+              </div>
             )}
 
             {activeTab === 'chats' && (
-              <div className="space-y-6">
+              <div className="space-y-6 p-4">
                 <h2 className="text-2xl font-bold text-white mb-6">Mensagens</h2>
                 <div className="text-center py-20 bg-white/5 border border-white/10 rounded-3xl">
                   <MessageCircle size={48} className="mx-auto text-slate-500 mb-4" />
@@ -118,7 +172,7 @@ export default function App() {
             )}
             
             {activeTab === 'profile' && (
-              <div className="flex flex-col items-center justify-center py-10 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+              <div className="flex flex-col items-center justify-center py-10 px-4 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
                 <div className="w-32 h-32 rounded-full border-4 border-fuchsia-500/30 overflow-hidden shadow-[0_0_30px_rgba(232,121,249,0.2)] relative bg-black/40 flex items-center justify-center">
                   {profile?.photoUrl ? (
                     <img src={profile.photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -155,8 +209,20 @@ export default function App() {
           </main>
 
           <nav className="fixed bottom-0 w-full bg-[#0a0a0f]/90 backdrop-blur-lg border-t border-white/5 pb-safe pt-2 px-4 z-40">
-            <div className="flex justify-between items-center max-w-sm mx-auto px-6">
-              <NavItem icon={<Compass size={24} />} label="Mapa" isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+            <div className="flex justify-between items-center max-w-md mx-auto px-2">
+              <NavItem icon={<MapPin size={24} />} label="Vibes" isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+              <NavItem icon={<Compass size={24} />} label="Descobrir" isActive={activeTab === 'discover'} onClick={() => setActiveTab('discover')} />
+              
+              {/* Center Action Button */}
+              <div className="relative -top-6">
+                <button 
+                  onClick={() => setIsCreatingEvent(true)}
+                  className="w-16 h-16 rounded-full bg-gradient-to-r from-fuchsia-600 to-cyan-600 text-white flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-105 transition-transform border-4 border-[#0a0a0f]"
+                >
+                  <Plus size={32} />
+                </button>
+              </div>
+
               <NavItem icon={<MessageCircle size={24} />} label="Chats" isActive={activeTab === 'chats'} onClick={() => setActiveTab('chats')} />
               <NavItem icon={<User size={24} />} label="Perfil" isActive={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
             </div>

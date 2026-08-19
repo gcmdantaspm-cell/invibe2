@@ -12,6 +12,7 @@ export interface EventModel {
   title: string;
   type: string; // Festa, Supermercado, Educacional, Bairro, Rua
   locationName: string;
+  location: { lat: number, lng: number }; // Geographic coordinates
   creatorId: string;
   createdAt: any;
   expiresAt: any;

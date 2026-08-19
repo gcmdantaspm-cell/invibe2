@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,10 +17,38 @@ export function CreateEvent({ onClose, onSuccess }: CreateEventProps) {
   const [type, setType] = useState(EVENT_TYPES[0]);
   const [locationName, setLocationName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          // Fallback to São Paulo
+          setUserLocation({lat: -23.5505, lng: -46.6333});
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      setUserLocation({lat: -23.5505, lng: -46.6333});
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    
+    // We require location for hyperlocal networking
+    if (!userLocation) {
+      alert("Precisamos da sua localização para criar um evento aqui!");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -28,6 +56,7 @@ export function CreateEvent({ onClose, onSuccess }: CreateEventProps) {
         title,
         type,
         locationName,
+        location: userLocation,
         creatorId: user.uid,
         createdAt: serverTimestamp(),
         // Expires in 12 hours for prototype purposes
@@ -52,6 +81,12 @@ export function CreateEvent({ onClose, onSuccess }: CreateEventProps) {
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {!userLocation && (
+            <div className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 p-3 rounded-xl text-sm mb-4">
+              Obtendo sua localização atual... Para criar um evento você precisa estar fisicamente no local.
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Nome do Evento</label>
             <input 
@@ -76,7 +111,7 @@ export function CreateEvent({ onClose, onSuccess }: CreateEventProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Local (Check-in)</label>
+            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Nome do Local</label>
             <div className="relative">
               <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-400" />
               <input 
@@ -92,10 +127,10 @@ export function CreateEvent({ onClose, onSuccess }: CreateEventProps) {
 
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || !userLocation}
             className="w-full py-4 mt-4 rounded-xl bg-gradient-to-r from-fuchsia-600 to-cyan-600 text-white font-bold hover:opacity-90 disabled:opacity-50"
           >
-            {loading ? 'Criando...' : 'Iniciar Evento Agora'}
+            {loading ? 'Criando...' : 'Iniciar Evento Aqui Agora'}
           </button>
         </form>
       </div>
