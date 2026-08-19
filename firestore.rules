@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { allow read, write: if false; }
+    
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'displayName', 'createdAt'])
+        && data.keys().size() == 3
+        && data.email is string && data.email.size() <= 100
+        && data.displayName is string && data.displayName.size() <= 50
+        && data.createdAt == request.time;
+    }
+    
+    function isValidTicket(data) {
+      return data.keys().hasAll(['eventId', 'userId', 'purchasedAt'])
+        && data.keys().size() == 3
+        && data.eventId is string && data.eventId.size() <= 128
+        && data.userId == request.auth.uid
+        && data.purchasedAt == request.time;
+    }
+    
+    function isValidLike(data) {
+      return data.keys().hasAll(['eventId', 'userId', 'likedAt'])
+        && data.keys().size() == 3
+        && data.eventId is string && data.eventId.size() <= 128
+        && data.userId == request.auth.uid
+        && data.likedAt == request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if false; 
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming());
+      allow update: if isSignedIn() && request.auth.uid == userId && incoming().diff(existing()).affectedKeys().hasOnly(['displayName']) && incoming().displayName is string && incoming().displayName.size() <= 50;
+      allow delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /tickets/{ticketId} {
+      allow get: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(ticketId) && isValidTicket(incoming());
+      allow update, delete: if false;
+    }
+
+    match /likes/{likeId} {
+      allow get: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(likeId) && isValidLike(incoming());
+      allow update: if false;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}

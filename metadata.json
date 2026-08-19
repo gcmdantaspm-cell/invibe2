@@ -1,0 +1,10 @@
+{
+  "name": "InVibe",
+  "description": "App de descoberta de eventos e vida noturna.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
