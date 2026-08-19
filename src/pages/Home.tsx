@@ -8,6 +8,7 @@ import { clsx } from 'clsx';
 export default function Home() {
   const navigate = useNavigate();
   const [isListPopupOpen, setIsListPopupOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [recenterSignal, setRecenterSignal] = useState(0);
   const { events, currentUser } = useAppData();
 
@@ -23,10 +24,81 @@ export default function Home() {
 
   return (
     <div className="h-[100dvh] w-full overflow-hidden relative md:max-w-[1200px] md:mx-auto">
+      {/* Drawer Overlay */}
+      {isDrawerOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm transition-opacity" 
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+      
+      {/* Drawer Menu */}
+      <div className={clsx(
+        "fixed inset-y-0 left-0 w-[280px] bg-surface z-[70] transform transition-transform duration-300 ease-in-out border-r border-white/10 flex flex-col shadow-2xl",
+        isDrawerOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="p-6 border-b border-white/10 mt-[env(safe-area-inset-top)]">
+          <div className="flex items-center gap-4 mb-6 cursor-pointer" onClick={() => { setIsDrawerOpen(false); navigate('/profile'); }}>
+            <img src={currentUser.avatarUrl} alt="User Profile" className="w-14 h-14 rounded-full border-2 border-primary/50 object-cover" />
+            <div>
+              <h2 className="font-headline-md text-on-surface">{currentUser.name}</h2>
+              <p className="text-sm text-primary">@{currentUser.username}</p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="text-center">
+              <p className="font-label-bold text-on-surface text-lg">1.2k</p>
+              <p className="text-xs text-on-surface-variant">Seguidores</p>
+            </div>
+            <div className="text-center">
+              <p className="font-label-bold text-on-surface text-lg">840</p>
+              <p className="text-xs text-on-surface-variant">Seguindo</p>
+            </div>
+          </div>
+        </div>
+        
+        <nav className="flex-1 overflow-y-auto py-4">
+          <ul className="space-y-2 px-4">
+            <li>
+              <button onClick={() => { setIsDrawerOpen(false); navigate('/profile'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
+                <span className="material-symbols-outlined text-on-surface-variant">person</span>
+                <span className="font-label-bold text-base">Meu Perfil</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => { setIsDrawerOpen(false); navigate('/create'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
+                <span className="material-symbols-outlined text-primary">add_circle</span>
+                <span className="font-label-bold text-base">Criar Evento</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => { setIsDrawerOpen(false); alert('Notificações'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
+                <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
+                <span className="font-label-bold text-base">Notificações</span>
+                <span className="ml-auto bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+              </button>
+            </li>
+            <li>
+              <button onClick={() => { setIsDrawerOpen(false); alert('Configurações'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
+                <span className="material-symbols-outlined text-on-surface-variant">settings</span>
+                <span className="font-label-bold text-base">Configurações</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        
+        <div className="p-6 border-t border-white/10">
+          <button onClick={() => { setIsDrawerOpen(false); alert('Sair'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-error/20 transition-colors text-error active:scale-95">
+            <span className="material-symbols-outlined">logout</span>
+            <span className="font-label-bold text-base">Sair</span>
+          </button>
+        </div>
+      </div>
+
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-white/10 md:max-w-[1200px]">
         <div className="flex justify-between items-center px-container-margin py-stack-sm w-full">
-          <button onClick={() => alert('Menu lateral')} aria-label="Menu" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+          <button onClick={() => setIsDrawerOpen(true)} aria-label="Menu" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
             <span className="material-symbols-outlined">menu</span>
           </button>
           <h1 className="font-display-lg-mobile font-extrabold tracking-tighter text-primary drop-shadow-[0_0_15px_rgba(235,178,255,0.8)]">INVIBE</h1>
