@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -7,6 +7,11 @@ import { NeonLogo } from './NeonLogo';
 export function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isInIframe, setIsInIframe] = useState(false);
+
+  useEffect(() => {
+    setIsInIframe(window !== window.top);
+  }, []);
 
   const handleGoogleLogin = async () => {
     setError('');
@@ -17,15 +22,16 @@ export function Auth() {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
       
-      // Check if user profile already exists
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       
-      // Save initial profile if it's a new user
       if (!userDoc.exists()) {
         try {
           await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email?.split('@')[0],
+            photoUrl: user.photoURL || '',
+            interactionsCount: 0,
             createdAt: serverTimestamp(),
           });
         } catch (dbErr) {
@@ -33,7 +39,8 @@ export function Auth() {
         }
       }
     } catch (err: any) {
-      console.error(err);
+      console.error('Login Error:', err);
+      // Better error formatting
       setError(err.message || 'Ocorreu um erro na autenticação.');
     } finally {
       setLoading(false);
@@ -43,7 +50,6 @@ export function Auth() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col items-center justify-center p-4 selection:bg-cyan-500/30">
       <div className="w-full max-w-md space-y-8 bg-white/5 p-8 rounded-3xl border border-white/10 backdrop-blur-md relative overflow-hidden text-center">
-        {/* Glow effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-fuchsia-600 to-cyan-600"></div>
         
         <div>
@@ -56,7 +62,17 @@ export function Auth() {
           </p>
         </div>
 
-        {error && <p className="text-red-400 text-sm font-medium text-center">{error}</p>}
+        {isInIframe && (
+          <div className="bg-fuchsia-500/10 border border-fuchsia-500/30 rounded-xl p-3 text-sm text-fuchsia-200">
+            <strong>Aviso:</strong> Para fazer login com o Google, você precisa <strong>abrir o app em uma nova aba</strong> (clique no ícone de seta no canto superior direito da tela).
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3">
+            <p className="text-red-400 text-xs font-medium break-words text-left">{error}</p>
+          </div>
+        )}
 
         <button
           onClick={handleGoogleLogin}

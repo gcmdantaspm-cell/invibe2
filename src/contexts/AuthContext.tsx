@@ -3,10 +3,7 @@ import { User, onAuthStateChanged, signOut, sendEmailVerification, reload } from
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-interface UserProfile {
-  email: string;
-  displayName: string;
-}
+import { UserProfile } from '../types';
 
 interface AuthContextType {
   user: User | null;
