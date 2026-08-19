@@ -32,9 +32,14 @@ export default function EventLobby() {
             <span className="material-symbols-outlined">arrow_back</span>
           </button>
           <h1 className="font-display-lg-mobile font-extrabold tracking-tighter text-primary drop-shadow-[0_0_15px_rgba(235,178,255,0.8)]">INVIBE</h1>
-          <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full">
-            <span className="material-symbols-outlined">search</span>
-          </button>
+          <div className="flex">
+            <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full">
+              <span className="material-symbols-outlined">search</span>
+            </button>
+            <button onClick={() => navigate('/profile')} className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform flex items-center justify-center p-2 rounded-full ml-2">
+              <span className="material-symbols-outlined">account_circle</span>
+            </button>
+          </div>
         </div>
       </header>
 

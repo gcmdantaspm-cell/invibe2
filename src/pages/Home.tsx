@@ -24,9 +24,14 @@ export default function Home() {
             <span className="material-symbols-outlined">menu</span>
           </button>
           <h1 className="font-display-lg-mobile font-extrabold tracking-tighter text-primary drop-shadow-[0_0_15px_rgba(235,178,255,0.8)]">INVIBE</h1>
-          <button aria-label="Search" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
-            <span className="material-symbols-outlined">search</span>
-          </button>
+          <div className="flex items-center">
+            <button aria-label="Search" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+              <span className="material-symbols-outlined">search</span>
+            </button>
+            <button onClick={() => navigate('/profile')} aria-label="Profile" className="w-8 h-8 rounded-full border border-primary/30 overflow-hidden active:scale-95 transition-transform ml-2">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh6QMtPDORjRpegJlcXTSUChYLRfObl5pQnAm94PF7beQCBNxVfRDoPRwM1nsSrHBKVr5JmqAgRR-dM3Ii_NGnIbJTjspODpYFQa8HGZK4qnGVTsFJrdp-cEvXmU0be1OK8JDbuCSnd_MuXbFZ_03JBFwiBwJG0rC7105AWvjEruwFMLnD1_5MVoVQ1TM3lL_-Ef5Z-Fny8bQ7tgflePE0T-paYkiHjT6ijIq0iP7s5ZVGbc_gtgSG" alt="User Profile" className="w-full h-full object-cover" />
+            </button>
+          </div>
         </div>
         
         {/* Search Bar */}
@@ -43,7 +48,7 @@ export default function Home() {
       </header>
 
       {/* Map Canvas Area */}
-      <main className="w-full h-full relative z-0 mt-32 pb-24">
+      <main className="absolute inset-0 w-full h-full z-0">
         {/* Interactive Map Background */}
         <div 
           className="absolute inset-0 w-full h-full bg-surface-dim bg-cover bg-center" 
@@ -51,77 +56,102 @@ export default function Home() {
         />
 
         {/* Map Pins */}
-        <div onClick={() => navigate('/events/e1')} className="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center border border-primary/30 shadow-[0_0_10px_rgba(235,178,255,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-primary text-[20px]">local_bar</span>
+        <div onClick={() => navigate('/events/e1')} className="absolute top-[20%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-primary/30 shadow-[0_0_10px_rgba(235,178,255,0.5)] cursor-pointer hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-primary text-[16px]">local_bar</span>
           </div>
         </div>
         
-        <div onClick={() => navigate('/events/e2')} className="absolute top-1/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center border border-secondary/30 shadow-[0_0_10px_rgba(0,241,253,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-secondary-container text-[20px]">shopping_cart</span>
+        <div onClick={() => navigate('/events/e2')} className="absolute top-[35%] right-[20%] transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-secondary/30 shadow-[0_0_10px_rgba(0,241,253,0.5)] cursor-pointer hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-secondary-container text-[16px]">shopping_cart</span>
           </div>
         </div>
         
-        <div onClick={() => navigate('/events/e3')} className="absolute bottom-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-10 h-10 flex items-center justify-center border border-tertiary-container/30 shadow-[0_0_10px_rgba(229,38,44,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-tertiary-container text-[20px]">school</span>
+        <div onClick={() => navigate('/events/e3')} className="absolute top-[60%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-tertiary-container/30 shadow-[0_0_10px_rgba(229,38,44,0.5)] cursor-pointer hover:scale-110 transition-transform">
+            <span className="material-symbols-outlined text-tertiary-container text-[16px]">school</span>
           </div>
         </div>
 
         {/* User Location Indicator */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10">
+        <div className="absolute top-[48%] left-[55%] transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10">
           <div className="w-4 h-4 bg-secondary-container rounded-full pulse-cyan shadow-[0_0_15px_rgba(0,241,253,0.8)] border-2 border-background"></div>
           <div className="absolute w-24 h-24 bg-secondary-container/10 rounded-full animate-ping pointer-events-none"></div>
         </div>
 
         {/* Floating Action Button (FAB) */}
-        <button aria-label="Criar Evento" className="absolute bottom-48 md:bottom-40 right-container-margin w-14 h-14 bg-primary-container rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(188,19,254,0.8)] hover:scale-105 active:scale-95 transition-all z-40">
+        <button aria-label="Criar Evento" className="absolute bottom-40 md:bottom-24 right-container-margin w-14 h-14 bg-primary-container rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(188,19,254,0.8)] hover:scale-105 active:scale-95 transition-all z-40">
           <span className="material-symbols-outlined text-on-primary-container text-[28px]">add</span>
         </button>
 
-        {/* Horizontal Scrollable List: Eventos Próximos */}
-        <div className="absolute bottom-[5.5rem] md:bottom-28 w-full z-30 pb-4">
-          <div className="flex justify-between items-center px-container-margin mb-unit">
-            <h2 className="font-label-bold text-on-surface uppercase tracking-widest opacity-80">Eventos Próximos</h2>
-            <button 
-              onClick={() => setIsListPopupOpen(true)}
-              className="font-label-bold text-secondary-container hover:underline text-sm"
-            >
-              Ver Lista
-            </button>
+        {/* Horizontal Scrollable Lists */}
+        <div className="absolute bottom-20 md:bottom-4 w-full z-30 pb-4">
+          <div className="flex items-center justify-between px-container-margin mb-unit">
+            <h2 className="font-label-bold text-label-bold text-primary uppercase tracking-widest opacity-90 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
+              Trending / Hype
+            </h2>
+            <span className="text-[12px] text-on-surface-variant uppercase tracking-tighter cursor-pointer hover:text-white" onClick={() => setIsListPopupOpen(true)}>Ver todos</span>
           </div>
+          
           <div className="flex overflow-x-auto gap-stack-md px-container-margin pb-stack-sm pt-unit hide-scrollbar snap-x">
-            {MOCK_EVENTS.map((event) => (
-              <div 
-                key={event.id}
-                onClick={() => navigate(`/events/${event.id}`)}
-                className="min-w-[240px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer"
-              >
-                <div className={clsx("absolute -top-10 -right-10 w-24 h-24 blur-xl rounded-full transition-colors", 
-                  event.themeColor === 'primary' && "bg-primary/20 group-hover:bg-primary/30",
-                  event.themeColor === 'secondary' && "bg-secondary/20 group-hover:bg-secondary/30",
-                  event.themeColor === 'tertiary' && "bg-tertiary-container/20 group-hover:bg-tertiary-container/30",
-                )}></div>
-                <div className="flex justify-between items-start">
-                  <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">{event.title}</h3>
-                  <span className={clsx("material-symbols-outlined text-[20px]", 
-                    event.themeColor === 'primary' && "text-primary",
-                    event.themeColor === 'secondary' && "text-secondary-container",
-                    event.themeColor === 'tertiary' && "text-tertiary-container",
-                  )} style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {event.type}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mt-auto pt-2">
-                  <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
-                  <span className="text-[14px] text-on-surface-variant">{event.distance}</span>
-                  <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
-                  <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
-                  <span className="text-[14px] text-on-surface-variant">{event.time}</span>
+            {/* Trending Card 1 */}
+            <div onClick={() => navigate('/events/e1')} className="min-w-[260px] bg-surface-container/80 backdrop-blur-md border border-primary/30 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-[0_0_10px_rgba(235,178,255,0.2)] relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/20 blur-xl rounded-full group-hover:bg-primary/30 transition-colors"></div>
+              <div className="flex justify-between items-start relative z-10">
+                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Neon Nights Rave</h3>
+                <div className="flex flex-col items-end">
+                  <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+                  <span className="text-[12px] font-bold text-primary">2.4k</span>
                 </div>
               </div>
-            ))}
+              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant">0.8 km</span>
+                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant">Em 2h</span>
+              </div>
+            </div>
+
+            {/* Trending Card 2 */}
+            <div onClick={() => navigate('/events/e2')} className="min-w-[260px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-secondary/20 blur-xl rounded-full group-hover:bg-secondary/30 transition-colors"></div>
+              <div className="flex justify-between items-start relative z-10">
+                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Rooftop Chill</h3>
+                <div className="flex flex-col items-end">
+                  <span className="material-symbols-outlined text-secondary-container text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
+                  <span className="text-[12px] font-bold text-secondary-container">1.8k</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant">1.2 km</span>
+                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant">Agora</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 className="px-container-margin font-label-bold text-label-bold text-on-surface mt-4 mb-unit uppercase tracking-widest opacity-80">Próximos de Você</h2>
+          <div className="flex overflow-x-auto gap-stack-md px-container-margin pb-stack-sm pt-unit hide-scrollbar snap-x">
+            {/* Proximity Card 1 */}
+            <div onClick={() => navigate('/events/e3')} className="min-w-[240px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-tertiary-container/20 blur-xl rounded-full group-hover:bg-tertiary-container/30 transition-colors"></div>
+              <div className="flex justify-between items-start relative z-10">
+                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Feira Urbana</h3>
+                <span className="material-symbols-outlined text-tertiary-container text-[20px]">storefront</span>
+              </div>
+              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant font-bold text-secondary-container">0.3 km</span>
+                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
+                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
+                <span className="font-body-md text-[14px] text-on-surface-variant">Amanhã</span>
+              </div>
+            </div>
           </div>
         </div>
       </main>

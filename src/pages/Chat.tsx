@@ -60,9 +60,14 @@ export default function Chat() {
           </div>
         </div>
         
-        <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95">
-          <span className="material-symbols-outlined">more_vert</span>
-        </button>
+        <div className="flex">
+          <button onClick={() => navigate('/profile')} className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 mr-2">
+            <span className="material-symbols-outlined">account_circle</span>
+          </button>
+          <button className="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95">
+            <span className="material-symbols-outlined">more_vert</span>
+          </button>
+        </div>
       </header>
 
       {/* Chat Canvas */}

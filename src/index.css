@@ -101,5 +101,13 @@
   .hype-pulse {
     animation: hypePulse 2s infinite;
   }
+  
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
 }
 
