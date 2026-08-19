@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_EVENTS } from '../data';
 import { BottomNav } from '../components/BottomNav';
+import LiveMap from '../components/LiveMap';
 import { clsx } from 'clsx';
 
 export default function Home() {
   const navigate = useNavigate();
   const [isListPopupOpen, setIsListPopupOpen] = useState(false);
+  const [recenterSignal, setRecenterSignal] = useState(0);
 
   // Sort events by proximity (parse distance string like '0.8 km' to 0.8)
   const sortedEvents = [...MOCK_EVENTS].sort((a, b) => {
@@ -49,36 +51,20 @@ export default function Home() {
 
       {/* Map Canvas Area */}
       <main className="absolute inset-0 w-full h-full z-0">
-        {/* Interactive Map Background */}
-        <div 
-          className="absolute inset-0 w-full h-full bg-surface-dim bg-cover bg-center" 
-          style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBX6ynf2kqA1IS3S9OfNKZhEJS89eJPMuws6kNM64drbJ9Nta02EoBDsSobum4oCWtEJH9DvngHzn2d1_Nh4krvqd4Ag9LWKLNRNBANJET4eb_j3grxlTd69nb67T37E_x_hdd2azBoPQJkpvoRTjh2F7Is7rq8_JC2juy1NDzIRjxr2AiqEDliCfEF4s9kN_8psIHmcFbZGsFbcOLebHhKqjaxGfSI_1O5BKvdJUMbIOf0PhcX_S_2')" }}
+        <LiveMap 
+          events={MOCK_EVENTS} 
+          onEventClick={(id) => navigate(`/events/${id}`)} 
+          recenterSignal={recenterSignal} 
         />
 
-        {/* Map Pins */}
-        <div onClick={() => navigate('/events/e1')} className="absolute top-[20%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-primary/30 shadow-[0_0_10px_rgba(235,178,255,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-primary text-[16px]">local_bar</span>
-          </div>
-        </div>
-        
-        <div onClick={() => navigate('/events/e2')} className="absolute top-[35%] right-[20%] transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-secondary/30 shadow-[0_0_10px_rgba(0,241,253,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-secondary-container text-[16px]">shopping_cart</span>
-          </div>
-        </div>
-        
-        <div onClick={() => navigate('/events/e3')} className="absolute top-[60%] left-[30%] transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="bg-surface-container/80 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center border border-tertiary-container/30 shadow-[0_0_10px_rgba(229,38,44,0.5)] cursor-pointer hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-tertiary-container text-[16px]">school</span>
-          </div>
-        </div>
-
-        {/* User Location Indicator */}
-        <div className="absolute top-[48%] left-[55%] transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10">
-          <div className="w-4 h-4 bg-secondary-container rounded-full pulse-cyan shadow-[0_0_15px_rgba(0,241,253,0.8)] border-2 border-background"></div>
-          <div className="absolute w-24 h-24 bg-secondary-container/10 rounded-full animate-ping pointer-events-none"></div>
-        </div>
+        {/* Center Location Button */}
+        <button 
+          aria-label="Centralizar no meu local"
+          onClick={() => setRecenterSignal(s => s + 1)} 
+          className="absolute bottom-60 md:bottom-44 right-container-margin w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all z-40 border border-white/10"
+        >
+          <span className="material-symbols-outlined text-secondary-container">my_location</span>
+        </button>
 
         {/* Floating Action Button (FAB) */}
         <button aria-label="Criar Evento" className="absolute bottom-40 md:bottom-24 right-container-margin w-14 h-14 bg-primary-container rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(188,19,254,0.8)] hover:scale-105 active:scale-95 transition-all z-40">
