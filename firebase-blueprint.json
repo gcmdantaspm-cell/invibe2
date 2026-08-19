@@ -1,0 +1,41 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "documentId": "uid",
+      "description": "User profile information",
+      "fields": [
+        { "name": "name", "type": "string" },
+        { "name": "username", "type": "string" },
+        { "name": "avatarUrl", "type": "string" },
+        { "name": "status", "type": "string" },
+        { "name": "age", "type": "number", "optional": true }
+      ]
+    },
+    {
+      "name": "events",
+      "documentId": "eventId",
+      "description": "App events around the city",
+      "fields": [
+        { "name": "title", "type": "string" },
+        { "name": "type", "type": "string" },
+        { "name": "distance", "type": "string" },
+        { "name": "time", "type": "string" },
+        { "name": "themeColor", "type": "string" }
+      ]
+    },
+    {
+      "name": "posts",
+      "documentId": "postId",
+      "description": "User posts in the event lobby",
+      "fields": [
+        { "name": "userId", "type": "string" },
+        { "name": "content", "type": "string" },
+        { "name": "imageUrl", "type": "string", "optional": true },
+        { "name": "hypes", "type": "number" },
+        { "name": "comments", "type": "number" },
+        { "name": "createdAt", "type": "timestamp" }
+      ]
+    }
+  ]
+}

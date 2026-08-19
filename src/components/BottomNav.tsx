@@ -16,15 +16,7 @@ export function BottomNav() {
           <span className="material-symbols-outlined text-[28px]" style={path === '/home' ? { fontVariationSettings: "'FILL' 1" } : {}}>map</span>
         </Link>
         
-        <button aria-label="nearby" className="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-90 duration-200">
-          <span className="material-symbols-outlined text-[24px]">explore</span>
-        </button>
-
-        <button aria-label="hypes" className="flex flex-col items-center justify-center text-on-surface-variant hover:text-secondary transition-colors active:scale-90 duration-200">
-          <span className="material-symbols-outlined text-[24px] text-tertiary-container">local_fire_department</span>
-        </button>
-        
-        <Link to="/events" className={clsx(
+        <Link to="/home" className={clsx(
           "flex flex-col items-center justify-center active:scale-90 transition-all duration-200",
           path.startsWith('/events') || path.startsWith('/event') ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
         )}>
@@ -33,9 +25,16 @@ export function BottomNav() {
 
         <Link to="/chat" className={clsx(
           "flex flex-col items-center justify-center active:scale-90 transition-all duration-200",
-          path === '/chat' ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
+          path === '/chat' || path.startsWith('/chat/') ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
         )}>
-          <span className="material-symbols-outlined text-[24px]" style={path === '/chat' ? { fontVariationSettings: "'FILL' 1" } : {}}>chat</span>
+          <span className="material-symbols-outlined text-[24px]" style={path === '/chat' || path.startsWith('/chat/') ? { fontVariationSettings: "'FILL' 1" } : {}}>chat</span>
+        </Link>
+
+        <Link to="/profile" className={clsx(
+          "flex flex-col items-center justify-center active:scale-90 transition-all duration-200",
+          path === '/profile' || path.startsWith('/profile/') ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
+        )}>
+          <span className="material-symbols-outlined text-[24px]" style={path === '/profile' || path.startsWith('/profile/') ? { fontVariationSettings: "'FILL' 1" } : {}}>person</span>
         </Link>
 
       </div>

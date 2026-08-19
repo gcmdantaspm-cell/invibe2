@@ -1,7 +1,17 @@
 import { useNavigate } from 'react-router-dom';
+import { signInWithGoogle } from '../lib/firebase';
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+      navigate('/home');
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
 
   return (
     <div className="min-h-[100dvh] flex flex-col relative overflow-hidden font-body-md text-body-md w-full">
@@ -25,7 +35,7 @@ export default function Login() {
           </p>
           
           <button 
-            onClick={() => navigate('/home')}
+            onClick={handleLogin}
             className="w-full flex items-center justify-center gap-gutter py-4 px-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-on-surface hover:bg-white/20 transition-all duration-300 active:scale-95 shadow-[0_4px_30px_rgba(0,0,0,0.1)] group"
           >
             <svg className="w-6 h-6" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">

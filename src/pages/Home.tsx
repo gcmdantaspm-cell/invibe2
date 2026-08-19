@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_EVENTS } from '../data';
+import { useAppData } from '../context/AppDataContext';
 import { BottomNav } from '../components/BottomNav';
 import LiveMap from '../components/LiveMap';
 import { clsx } from 'clsx';
@@ -9,29 +9,33 @@ export default function Home() {
   const navigate = useNavigate();
   const [isListPopupOpen, setIsListPopupOpen] = useState(false);
   const [recenterSignal, setRecenterSignal] = useState(0);
+  const { events, currentUser } = useAppData();
 
   // Sort events by proximity (parse distance string like '0.8 km' to 0.8)
-  const sortedEvents = [...MOCK_EVENTS].sort((a, b) => {
+  const sortedEvents = [...events].sort((a, b) => {
     const distA = parseFloat(a.distance);
     const distB = parseFloat(b.distance);
     return distA - distB;
   });
+
+  const trendingEvents = sortedEvents.slice(0, 2);
+  const nearbyEvents = sortedEvents.slice(2);
 
   return (
     <div className="h-[100dvh] w-full overflow-hidden relative md:max-w-[1200px] md:mx-auto">
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-surface/60 backdrop-blur-xl border-b border-white/10 md:max-w-[1200px]">
         <div className="flex justify-between items-center px-container-margin py-stack-sm w-full">
-          <button aria-label="Menu" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+          <button onClick={() => alert('Menu lateral')} aria-label="Menu" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
             <span className="material-symbols-outlined">menu</span>
           </button>
           <h1 className="font-display-lg-mobile font-extrabold tracking-tighter text-primary drop-shadow-[0_0_15px_rgba(235,178,255,0.8)]">INVIBE</h1>
           <div className="flex items-center">
-            <button aria-label="Search" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
+            <button onClick={() => alert('Busca aberta')} aria-label="Search" className="text-primary hover:opacity-80 transition-opacity active:scale-95 flex items-center justify-center w-10 h-10 rounded-full">
               <span className="material-symbols-outlined">search</span>
             </button>
             <button onClick={() => navigate('/profile')} aria-label="Profile" className="w-8 h-8 rounded-full border border-primary/30 overflow-hidden active:scale-95 transition-transform ml-2">
-              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh6QMtPDORjRpegJlcXTSUChYLRfObl5pQnAm94PF7beQCBNxVfRDoPRwM1nsSrHBKVr5JmqAgRR-dM3Ii_NGnIbJTjspODpYFQa8HGZK4qnGVTsFJrdp-cEvXmU0be1OK8JDbuCSnd_MuXbFZ_03JBFwiBwJG0rC7105AWvjEruwFMLnD1_5MVoVQ1TM3lL_-Ef5Z-Fny8bQ7tgflePE0T-paYkiHjT6ijIq0iP7s5ZVGbc_gtgSG" alt="User Profile" className="w-full h-full object-cover" />
+              <img src={currentUser.avatarUrl} alt="User Profile" className="w-full h-full object-cover" />
             </button>
           </div>
         </div>
@@ -52,7 +56,7 @@ export default function Home() {
       {/* Map Canvas Area */}
       <main className="absolute inset-0 w-full h-full z-0">
         <LiveMap 
-          events={MOCK_EVENTS} 
+          events={events} 
           onEventClick={(id) => navigate(`/events/${id}`)} 
           recenterSignal={recenterSignal} 
         />
@@ -67,7 +71,11 @@ export default function Home() {
         </button>
 
         {/* Floating Action Button (FAB) */}
-        <button aria-label="Criar Evento" className="absolute bottom-40 md:bottom-24 right-container-margin w-14 h-14 bg-primary-container rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(188,19,254,0.8)] hover:scale-105 active:scale-95 transition-all z-40">
+        <button 
+          onClick={() => navigate('/create-event')}
+          aria-label="Criar Evento" 
+          className="absolute bottom-40 md:bottom-24 right-container-margin w-14 h-14 bg-primary-container rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(188,19,254,0.8)] hover:scale-105 active:scale-95 transition-all z-40"
+        >
           <span className="material-symbols-outlined text-on-primary-container text-[28px]">add</span>
         </button>
 
@@ -82,63 +90,65 @@ export default function Home() {
           </div>
           
           <div className="flex overflow-x-auto gap-stack-md px-container-margin pb-stack-sm pt-unit hide-scrollbar snap-x">
-            {/* Trending Card 1 */}
-            <div onClick={() => navigate('/events/e1')} className="min-w-[260px] bg-surface-container/80 backdrop-blur-md border border-primary/30 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-[0_0_10px_rgba(235,178,255,0.2)] relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/20 blur-xl rounded-full group-hover:bg-primary/30 transition-colors"></div>
-              <div className="flex justify-between items-start relative z-10">
-                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Neon Nights Rave</h3>
-                <div className="flex flex-col items-end">
-                  <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
-                  <span className="text-[12px] font-bold text-primary">2.4k</span>
+            {trendingEvents.map((event) => (
+              <div key={event.id} onClick={() => navigate(`/events/${event.id}`)} className="min-w-[260px] bg-surface-container/80 backdrop-blur-md border border-primary/30 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-[0_0_10px_rgba(235,178,255,0.2)] relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
+                <div className={clsx("absolute -top-10 -right-10 w-24 h-24 blur-xl rounded-full group-hover:opacity-80 transition-opacity", 
+                  event.themeColor === 'primary' && "bg-primary/20",
+                  event.themeColor === 'secondary' && "bg-secondary/20",
+                  event.themeColor === 'tertiary' && "bg-tertiary-container/20"
+                )}></div>
+                <div className="flex justify-between items-start relative z-10">
+                  <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">{event.title}</h3>
+                  <div className="flex flex-col items-end">
+                    <span className={clsx("material-symbols-outlined text-[20px]", 
+                      event.themeColor === 'primary' && "text-primary",
+                      event.themeColor === 'secondary' && "text-secondary-container",
+                      event.themeColor === 'tertiary' && "text-tertiary-container"
+                    )} style={{ fontVariationSettings: "'FILL' 1" }}>{event.type}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
+                  <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
+                  <span className="font-body-md text-[14px] text-on-surface-variant">{event.distance}</span>
+                  <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
+                  <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
+                  <span className="font-body-md text-[14px] text-on-surface-variant">{event.time}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant">0.8 km</span>
-                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant">Em 2h</span>
-              </div>
-            </div>
-
-            {/* Trending Card 2 */}
-            <div onClick={() => navigate('/events/e2')} className="min-w-[260px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-secondary/20 blur-xl rounded-full group-hover:bg-secondary/30 transition-colors"></div>
-              <div className="flex justify-between items-start relative z-10">
-                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Rooftop Chill</h3>
-                <div className="flex flex-col items-end">
-                  <span className="material-symbols-outlined text-secondary-container text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
-                  <span className="text-[12px] font-bold text-secondary-container">1.8k</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant">1.2 km</span>
-                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant">Agora</span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <h2 className="px-container-margin font-label-bold text-label-bold text-on-surface mt-4 mb-unit uppercase tracking-widest opacity-80">Próximos de Você</h2>
-          <div className="flex overflow-x-auto gap-stack-md px-container-margin pb-stack-sm pt-unit hide-scrollbar snap-x">
-            {/* Proximity Card 1 */}
-            <div onClick={() => navigate('/events/e3')} className="min-w-[240px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-tertiary-container/20 blur-xl rounded-full group-hover:bg-tertiary-container/30 transition-colors"></div>
-              <div className="flex justify-between items-start relative z-10">
-                <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">Feira Urbana</h3>
-                <span className="material-symbols-outlined text-tertiary-container text-[20px]">storefront</span>
+          {nearbyEvents.length > 0 && (
+            <>
+              <h2 className="px-container-margin font-label-bold text-label-bold text-on-surface mt-4 mb-unit uppercase tracking-widest opacity-80">Próximos de Você</h2>
+              <div className="flex overflow-x-auto gap-stack-md px-container-margin pb-stack-sm pt-unit hide-scrollbar snap-x">
+                {nearbyEvents.map((event) => (
+                  <div key={event.id} onClick={() => navigate(`/events/${event.id}`)} className="min-w-[240px] bg-surface-container/80 backdrop-blur-md border border-white/10 rounded-[1.5rem] p-4 flex flex-col gap-unit snap-center shadow-lg relative overflow-hidden group hover:bg-surface-bright/80 transition-colors cursor-pointer">
+                    <div className={clsx("absolute -top-10 -right-10 w-24 h-24 blur-xl rounded-full group-hover:opacity-80 transition-opacity", 
+                      event.themeColor === 'primary' && "bg-primary/20",
+                      event.themeColor === 'secondary' && "bg-secondary/20",
+                      event.themeColor === 'tertiary' && "bg-tertiary-container/20"
+                    )}></div>
+                    <div className="flex justify-between items-start relative z-10">
+                      <h3 className="font-headline-md text-[18px] leading-tight text-on-surface font-bold">{event.title}</h3>
+                      <span className={clsx("material-symbols-outlined text-[20px]", 
+                        event.themeColor === 'primary' && "text-primary",
+                        event.themeColor === 'secondary' && "text-secondary-container",
+                        event.themeColor === 'tertiary' && "text-tertiary-container"
+                      )}>{event.type}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
+                      <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
+                      <span className="font-body-md text-[14px] text-on-surface-variant font-bold text-secondary-container">{event.distance}</span>
+                      <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
+                      <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
+                      <span className="font-body-md text-[14px] text-on-surface-variant">{event.time}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-2 mt-auto pt-2 relative z-10">
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">location_on</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant font-bold text-secondary-container">0.3 km</span>
-                <span className="w-1 h-1 bg-on-surface-variant rounded-full mx-1"></span>
-                <span className="material-symbols-outlined text-secondary-container text-[16px]">schedule</span>
-                <span className="font-body-md text-[14px] text-on-surface-variant">Amanhã</span>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </main>
 
