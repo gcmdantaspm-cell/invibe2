@@ -60,7 +60,7 @@ export const CURRENT_USER: User = {
   name: 'Alex Nova',
   username: '@alexnova',
   avatarUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBh6QMtPDORjRpegJlcXTSUChYLRfObl5pQnAm94PF7beQCBNxVfRDoPRwM1nsSrHBKVr5JmqAgRR-dM3Ii_NGnIbJTjspODpYFQa8HGZK4qnGVTsFJrdp-cEvXmU0be1OK8JDbuCSnd_MuXbFZ_03JBFwiBwJG0rC7105AWvjEruwFMLnD1_5MVoVQ1TM3lL_-Ef5Z-Fny8bQ7tgflePE0T-paYkiHjT6ijIq0iP7s5ZVGbc_gtgSG',
-  status: 'Curtindo o rolê!',
+  status: 'Hypando o rolê!',
   bio: 'Apenas aproveitando a vibe. 🌆',
   gallery: [...PROFILE_GALLERY]
 };

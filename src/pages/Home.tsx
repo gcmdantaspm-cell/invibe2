@@ -72,7 +72,7 @@ export default function Home() {
               </button>
             </li>
             <li>
-              <button onClick={() => { setIsDrawerOpen(false); alert('Notificações'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
+              <button onClick={() => { setIsDrawerOpen(false); navigate('/notifications'); }} className="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-surface-container-high transition-colors text-on-surface active:scale-95">
                 <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
                 <span className="font-label-bold text-base">Notificações</span>
                 <span className="ml-auto bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>

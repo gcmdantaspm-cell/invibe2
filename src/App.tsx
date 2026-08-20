@@ -6,6 +6,7 @@ import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import ChatList from './pages/ChatList';
 import CreateEvent from './pages/CreateEvent';
+import Notifications from './pages/Notifications';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat/:userId" element={<Chat />} />
         <Route path="/chat" element={<ChatList />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>

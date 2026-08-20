@@ -16,11 +16,11 @@ export function BottomNav() {
           <span className="material-symbols-outlined text-[28px]" style={path === '/home' ? { fontVariationSettings: "'FILL' 1" } : {}}>map</span>
         </Link>
         
-        <Link to="/home" className={clsx(
+        <Link to="/notifications" className={clsx(
           "flex flex-col items-center justify-center active:scale-90 transition-all duration-200",
-          path.startsWith('/events') || path.startsWith('/event') ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
+          path === '/notifications' ? 'text-secondary-container drop-shadow-[0_0_8px_rgba(0,241,253,0.9)] scale-110' : 'text-on-surface-variant hover:text-secondary'
         )}>
-          <span className="material-symbols-outlined text-[24px]" style={path.startsWith('/events') || path.startsWith('/event') ? { fontVariationSettings: "'FILL' 1" } : {}}>notifications</span>
+          <span className="material-symbols-outlined text-[24px]" style={path === '/notifications' ? { fontVariationSettings: "'FILL' 1" } : {}}>notifications</span>
         </Link>
 
         <Link to="/chat" className={clsx(
